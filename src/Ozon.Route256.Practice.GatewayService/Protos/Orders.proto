@@ -1,0 +1,125 @@
+syntax = "proto3";
+option csharp_namespace = "Ozon.Route256.Practice.GatewayService.Protos";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service Orders
+{
+  rpc CancelOrder(GetOrderByIdRequest) returns (CancelOrderResponse);
+  rpc GetCustomerOrders(GetCustomerOrdersRequest) returns (GetOrdersResponse);
+  rpc GetRegionOrders(GetRegionOrdersRequest) returns (GetOrdersResponse);
+  rpc GetOrderState(GetOrderByIdRequest) returns (GetOrderStateResponse);
+  rpc GetRegions(google.protobuf.Empty) returns (GetRegionsResponse);
+  rpc GetOrdersAggregation(GetOrdersAggregationRequest) returns (GetOrdersAggregationResponse);
+}
+
+message GetOrderByIdRequest
+{
+  int64 id = 1;
+}
+
+message GetCustomerOrdersRequest
+{
+  int32 id = 1;
+  google.protobuf.Timestamp start_time = 2;
+  Pagination pagination = 3;
+}
+
+message GetRegionOrdersRequest
+{
+  repeated string regions = 1;
+  OrderSource order_source = 2;
+  Pagination pagination = 3;
+  optional SortType sort_type = 5;
+  optional SortObject sort_object  = 6;
+}
+
+message GetOrdersAggregationRequest
+{
+  google.protobuf.Timestamp start_time = 1;
+  repeated string regions = 2;
+}
+
+message GetOrdersAggregationResponse
+{
+  repeated OrdersAggregation orders = 1;
+}
+
+message OrdersAggregation
+{
+  string region = 1;
+  int32 order_count = 2;
+  int64 price = 3;
+  uint32 weight = 4;
+  int32 customer_count = 5;
+}
+
+message CancelOrderResponse
+{
+  bool success = 1;
+  string error = 2;
+}
+
+message GetRegionsResponse
+{
+  repeated string regions = 1;
+}
+
+message GetOrderStateResponse
+{
+  OrderState state = 1;
+}
+
+message GetOrdersResponse
+{
+  repeated Order Orders = 1;
+}
+
+message Order
+{
+  int64 id = 1;
+  int32 count = 2;
+  int64 price = 3;
+  uint32 weight = 4;
+  OrderSource order_source = 5;
+  google.protobuf.Timestamp start_time = 6;
+  string region = 7;
+  OrderState state = 8;
+  int64 customer_id = 9;
+}
+
+message Pagination
+{
+  int32 page_number = 1;
+  int32 page_size = 2;
+}
+
+
+enum OrderSource
+{
+    WebSite = 0;
+    Mobile = 1;
+    Api = 2;
+}
+
+enum OrderState
+{
+    Created = 0;
+    SentToCustomer = 1;
+    Delivered = 2;
+    Lost = 3;
+    Cancelled = 4;
+}
+
+enum SortType
+{
+    ASC = 0;
+    DESC = 1;
+}
+
+enum SortObject
+{
+    None = 0;
+    Region = 1;
+}

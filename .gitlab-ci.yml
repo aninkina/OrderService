@@ -1,0 +1,27 @@
+image: docker:latest
+
+stages:
+  - build_images
+
+services:
+  - name: docker:dind
+
+gateway_service:
+  stage: build_images
+  rules:
+    - when: always
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  needs: []
+  script:
+    - dotnet restore src/Ozon.Route256.Practice.GatewayService/Ozon.Route256.Practice.GatewayService.csproj
+    - dotnet build src/Ozon.Route256.Practice.GatewayService/Ozon.Route256.Practice.GatewayService.csproj --no-restore
+
+orders_service:
+  stage: build_images
+  rules:
+    - when: always
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  needs: []
+  script:
+    - dotnet restore src/Ozon.Route256.Practice.OrdersService/Ozon.Route256.Practice.OrdersService.csproj
+    - dotnet build src/Ozon.Route256.Practice.OrdersService/Ozon.Route256.Practice.OrdersService.csproj --no-restore
