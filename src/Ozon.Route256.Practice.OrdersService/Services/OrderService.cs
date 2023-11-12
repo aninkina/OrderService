@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using GeoCoordinatePortable;
 using Ozon.Route256.Practice.OrdersService.Exceptions;
 using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
 using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
@@ -72,7 +73,7 @@ public class OrderService : IOrderService
             StartTime = DateTime.UtcNow
         };
 
-        await _ordersRepository.Update(cancelledOrder, token);
+        await _ordersRepository.UpdateState(cancelledOrder, token);
 
         return new CancelOrderDto() { IsSucceed = true, Error = "" };
     }
@@ -130,8 +131,20 @@ public class OrderService : IOrderService
             if (token.IsCancellationRequested)
                 yield break;
 
-            yield return region;
+            yield return region.Name;
         }
+    }
+
+    public async Task Insert(OrderDto order, CancellationToken token)
+    {
+        var existOrder = await _ordersRepository.Find(order.Id, token);
+
+        if (existOrder is not null)
+        {
+            throw new NotFoundException($"Order with Id:{order.Id} already exists");
+        }
+
+        await _ordersRepository.Insert(order, token);
     }
 
     public async Task UpdateOrderState(EventOrderDto eventOrder, CancellationToken token)
@@ -151,6 +164,19 @@ public class OrderService : IOrderService
             StartTime = eventOrder.ChangeAt
         };
 
-        await _ordersRepository.Update(updatedOrder, token);
+        await _ordersRepository.UpdateState(updatedOrder, token);
+    }
+
+    public Task<bool> ValidateAddress(AddressDto address, CancellationToken token)
+    {
+        var regionStock = _ordersRepository.GetAllRegions(token).ToEnumerable().First(x => x.Name == address.Region);
+
+        var stockLocation = new GeoCoordinate(regionStock.Latitude, regionStock.Longitude);
+        var customerLocation = new GeoCoordinate(address.Latitude, address.Longitude);
+
+        _logger.LogInformation($"stock = {stockLocation.Latitude}, {stockLocation.Longitude}");
+        _logger.LogInformation($"customer = {customerLocation.Latitude}, {customerLocation.Longitude}");
+
+        return Task.FromResult(stockLocation.GetDistanceTo(customerLocation) < 5000 * 1000);
     }
 }

@@ -1,7 +1,7 @@
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Impl;
 using Ozon.Route256.Practice.OrdersService.Services;
 
-namespace Ozon.Route256.Practice.OrdersService.Infrastructure.Repository;
+namespace Ozon.Route256.Practice.OrdersService.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtension
 {

@@ -4,10 +4,15 @@ using Ozon.Route256.Practice.OrdersService.Services.Interfaces;
 using Ozon.Route256.Practice.OrdersService.Services;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Impl;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Kafka;
-using Ozon.Route256.Practice.OrdersService.Infrastructure.Kafka.Consumers;
 using Ozon.Route256.Practice.OrdersService.GrpcServices.Interfaces;
 using Ozon.Route256.Practice.OrdersService.Protos;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Redis;
+using Ozon.Route256.Practice.OrdersService.Dal.Common;
+using Ozon.Route256.Practice.OrdersService.Dal;
+using FluentMigrator.Runner;
+using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
+using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
+using Ozon.Route256.Practice.OrdersService.Services.Models.Requests;
 
 namespace Ozon.Route256.Practice.OrdersService;
 
@@ -31,11 +36,10 @@ public sealed class Startup
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-
         services.AddGrpc(x => x.Interceptors.Add<LoggerInterceptor>());
 
         services.AddSingleton<InMemoryStorage>();
-        services.AddScoped<IOrdersRepository, OrdersRepository>();
+        services.AddScoped<IOrdersRepository, DbOrdersRepository>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICustomerService, CustomerService>();
 
@@ -62,20 +66,42 @@ public sealed class Startup
         });
 
         services.AddGrpcReflection();
-        
+
         services.AddControllers();
         services.AddEndpointsApiExplorer();
 
         services.AddGrpcSwagger();
+
+        var connectionString = _configuration.GetConnectionString("OrderDb");
+
+        services.AddSingleton<IPostgresConnectionFactory>(_ => new PostgresConnectionFactory(connectionString!));
+
+        services.AddMigrations(_configuration);
     }
 
-    public void Configure(IApplicationBuilder app)
+    public async void Configure(IApplicationBuilder app)
     {
+        app.MigrateUp();
+
         app.UseRouting();
         app.UseEndpoints(x =>
         {
             x.MapGrpcService<OrdersGrpcService>();
             x.MapGrpcReflectionService();
         });
+
+        using var scope = app.ApplicationServices.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+
+        var req = new GetRegionOrdersDto
+        {
+            SortObject = SortObject.Region,
+            OrderSource = OrderSource.WebSite,
+            PaginationDto = new Services.Models.Common.PaginationDto(1, 1),
+            Regions = new string[] { "Moscow" },
+            SortType = SortType.Asc
+        };
+        var res = await runner.GetRegionOrders(req, CancellationToken.None).ToArrayAsync();
+        var res2 = res;
     }
 }

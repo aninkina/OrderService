@@ -43,6 +43,16 @@ public class OrdersController : ControllerBase
         return result.ToRestType();
     }
 
+    //[HttpPost("insert")]
+    //public async Task<ICollection<OrderResponse>> InsertOrder([FromBody] GetCustomerOrdersRequest request, CancellationToken cancellationToken)
+    //{
+    //    var grpcRequest = request.ToProtoType();
+
+    //    var result = await _orderService.GetCustomerOrders(grpcRequest, cancellationToken);
+
+    //    return result.ToRestType();
+    //}
+
     [HttpPost("region-orders")]
     public async Task<ICollection<OrderResponse>> GetRegionOrders([FromBody] GetRegionOrdersRequest request, CancellationToken cancellationToken)
     {

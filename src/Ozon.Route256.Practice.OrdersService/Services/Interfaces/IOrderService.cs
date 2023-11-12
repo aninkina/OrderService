@@ -20,5 +20,9 @@ public interface IOrderService
     IAsyncEnumerable<string> GetRegions(CancellationToken token);
 
     IAsyncEnumerable<OrdersAggregationDto> GetOrdersAggregation(DateTime start, ICollection<string> regions, CancellationToken token);
+
+    Task<bool> ValidateAddress(AddressDto address, CancellationToken token);
+
+    Task Insert(OrderDto order, CancellationToken token);
 }
 

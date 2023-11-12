@@ -1,9 +1,8 @@
 using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
-using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
 
-namespace Ozon.Route256.Practice.OrdersService.Services.Models.Responses;
+namespace Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Entity;
 
-public record struct OrderDto(
+public record struct OrderEntity(
     long Id,
     int Count,
     decimal Price,
@@ -12,5 +11,5 @@ public record struct OrderDto(
     DateTime StartTime,
     OrderState State,
     OrderSource Source,
-    CustomerDto Customer
+    int CustomerId
 );

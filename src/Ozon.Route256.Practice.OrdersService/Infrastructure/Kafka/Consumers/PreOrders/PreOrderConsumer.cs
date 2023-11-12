@@ -6,6 +6,7 @@ using Ozon.Route256.Practice.OrdersService.Infrastructure.Kafka.Producers.NewOrd
 using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
 using Ozon.Route256.Practice.OrdersService.Services;
 using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
+using Ozon.Route256.Practice.OrdersService.Services.Interfaces;
 using Ozon.Route256.Practice.OrdersService.Services.Models.Responses;
 
 namespace Ozon.Route256.Practice.OrdersService.Infrastructure.Kafka.Consumers.Impl;
@@ -39,10 +40,10 @@ public class PreOrderConsumer : BackgroundService
             try
             {
                 consumer.Subscribe(_config.Value.Topic);
-                //await Task.Run(() => ConsumeCycle(consumer, stoppingToken), stoppingToken);
-                await ConsumeCycle(
-                    consumer,
-                    stoppingToken);
+                await Task.Run(() => ConsumeCycle(consumer, stoppingToken), stoppingToken);
+                //await ConsumeCycle(
+                //    consumer,
+                //    stoppingToken);
             }
             catch (Exception ex)
             {
@@ -91,7 +92,7 @@ public class PreOrderConsumer : BackgroundService
             return;
         }
 
-        _logger.LogInformation($"NEW ORDER: {kafkaOrder}");
+        _logger.LogInformation($"PRE ORDER: {kafkaOrder}");
 
         using var scope = _serviceScopeFactory.CreateScope();
 
@@ -100,20 +101,21 @@ public class PreOrderConsumer : BackgroundService
 
         _logger.LogInformation($"CustumerName = {customer.Name}, {customer.Surname}, {customer.PhoneNumber}");
 
-
-        var orderRepository = scope.ServiceProvider.GetRequiredService<IOrdersRepository>();
+        var orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
         var order = kafkaOrder.ToDomain(customer);
-        await orderRepository
+        await orderService
             .Insert(
                 order,
                 ct);
 
-        var validationDistanceResult = await orderRepository.ValidateAddress(order.Customer.Address, ct);
+        var validationDistanceResult = await orderService.ValidateAddress(order.Customer.Address, ct);
         if (validationDistanceResult)
         {
             var newOrderProducer = scope.ServiceProvider.GetRequiredService<NewOrderProducer>();
             await newOrderProducer.Produce(order.Id, ct);
         }
+        _logger.LogInformation($"valid ={validationDistanceResult},address = {order.Customer.Address}");
+
     }
 
 
@@ -128,16 +130,15 @@ public class PreOrderConsumer : BackgroundService
         public OrderDto ToDomain(CustomerDto customer)
         {
             return new OrderDto(
-                Id,
+                Id: Id,
                 Count: Goods.Select(x => x.Quantity).Sum(),
                 Price: Goods.Select(x => x.Price).Sum(),
-                // TODO: переделать вес
-                Weight: 1000,
-                Source,
-                Customer.Address.Region,
-                DateTime.Now,
-                OrderState.Created,
-                new CustomerDto(
+                Weight: 100,
+                Region: customer.Address.Region,
+                StartTime: DateTime.Now,
+                State: OrderState.Created,
+                Source: Source,
+                Customer: new CustomerDto(
                     Id: Customer.Id,
                     Name: customer.Name,
                     Surname: customer.Surname,

@@ -30,7 +30,7 @@ public class OrdersRepository : IOrdersRepository
             : Task.FromResult<OrderDto?>(null);
     }
 
-    public Task Update(OrderDto order, CancellationToken token)
+    public Task UpdateState(OrderDto order, CancellationToken token)
     {
         if (!_fakeStorage.Orders.ContainsKey((int)order.Id))
         {
@@ -82,10 +82,10 @@ public class OrdersRepository : IOrdersRepository
         }
     }
 
-    public IAsyncEnumerable<string> GetAllRegions(CancellationToken token)
+    public IAsyncEnumerable<RegionDto> GetAllRegions(CancellationToken token)
     {
         _logger.LogInformation($"fakeStorage = {_fakeStorage.GetHashCode()}");
-        return _fakeStorage.Regions.Select(x=> x.Region).ToAsyncEnumerable();
+        return _fakeStorage.Regions.Select(x=> new RegionDto(Name: x.Region, 0, 0)).ToAsyncEnumerable();
     }
 
     public IAsyncEnumerable<OrdersAggregationDto> GetOrdersAggregation(DateTime start, ICollection<string> regions, CancellationToken token)
@@ -113,17 +113,5 @@ public class OrdersRepository : IOrdersRepository
         return Task.CompletedTask.WaitAsync(token);
     }
 
-    public Task<bool> ValidateAddress(AddressDto address, CancellationToken token)
-    {
-        // потом обращение к regions  будет асинхронным
-        var regionStock = _fakeStorage.Regions.Find(x => x.Region == address.Region);
 
-        var stockLocation = new GeoCoordinate(regionStock.Latitude, regionStock.Longitude);
-        var customerLocation = new GeoCoordinate(address.Latitude, address.Longitude);
-
-        _logger.LogInformation($"stock = {stockLocation.Latitude}, {stockLocation.Longitude}");
-        _logger.LogInformation($"customer = {customerLocation.Latitude}, {customerLocation.Longitude}");
-
-        return Task.FromResult(stockLocation.GetDistanceTo(customerLocation) < 5000*1000);
-    }
 }

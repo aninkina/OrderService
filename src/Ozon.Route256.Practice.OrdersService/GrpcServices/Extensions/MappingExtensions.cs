@@ -19,7 +19,7 @@ public static class MappingExtensions
             Price = (long)model.Price,
             Weight = model.Weight,
             OrderSource = model.Source,
-            StartTime = Timestamp.FromDateTime(model.StartTime),
+            StartTime = Timestamp.FromDateTime(DateTime.SpecifyKind(model.StartTime, DateTimeKind.Utc)),
             Region = model.Region,
             State = model.State,
             CustomerId = model.Customer.Id

@@ -7,8 +7,8 @@ await Host.CreateDefaultBuilder(args)
     {
         var builder = WebApplication.CreateBuilder(args);
         var isProduction = builder.Environment.IsProduction();
-        //if (isProduction)
-        //{
+    if (isProduction)
+    {
         var grpcPort = int.Parse(Environment.GetEnvironmentVariable("ROUTE256_GRPC_PORT")!);
         var httpPort = int.Parse(Environment.GetEnvironmentVariable("ROUTE256_HTTP_PORT")!);
 
@@ -21,7 +21,7 @@ await Host.CreateDefaultBuilder(args)
             IPAddress.Any,
             httpPort,
             listenOptions => listenOptions.Protocols = HttpProtocols.Http1);
-        //}
+        }
 
     }))
     .Build()

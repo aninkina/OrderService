@@ -233,9 +233,9 @@ services:
     image: postgres:latest
     container_name: orders-service-db
     environment:
-      - POSTGRES_DB=orders-service
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
     volumes:
       - orders_service_data:/var/lib/postgresql/data
     ports:
