@@ -78,7 +78,6 @@ Sends the order change status to the **orders_events** topic
 Из внешних зависимостей имеет только DependencyInjection и Logging.
 
 Содержит:
-- интерфейсы всех четырех репозиториев приложения,
 - интерфейс и реализацию сервиса IOrderService, содержащего бизнес-логику приложения,
 - интерфейсы вспомогательных сервисов ICustomersService и ILogisticsSimulator (независимых от реализации),
 - ServiceCollectionExtension, регистрирующий IOrderService в DI-контейнере приложения.
