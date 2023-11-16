@@ -62,6 +62,10 @@ Sends the order change status to the **orders_events** topic
 - Validates and produces **new_orders**  for logistics.
 - Consumes **orders_events**  from logistics and updates status data in the storage.
 
+### OrdersService.Grpc
+
+Содержит .proto файлы внешних сервисов
+
 ### OrdersService.Domain
 
 Не зависит от других проектов.
