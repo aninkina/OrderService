@@ -61,6 +61,45 @@ Sends the order change status to the **orders_events** topic
 - Reads additional data from CustomerService (customer conatcts)
 - Validates and produces **new_orders**  for logistics.
 - Consumes **orders_events**  from logistics and updates status data in the storage.
+
+### OrdersService.Domain
+
+Не зависит от других проектов.
+Не имеет внешних зависимостей.
+Содержит Entities, а также связанные с ними Extensions и Exceptions.
+
+### OrdersService.Application
+
+Зависит от OrderService.Domain.
+Из внешних зависимостей имеет только DependencyInjection и Logging.
+
+Содержит:
+- интерфейсы всех четырех репозиториев приложения,
+- интерфейс и реализацию сервиса IOrderService, содержащего бизнес-логику приложения,
+- интерфейсы вспомогательных сервисов ICustomersService и ILogisticsSimulator (независимых от реализации),
+- ServiceCollectionExtension, регистрирующий IOrderService в DI-контейнере приложения.
+
+### OrdersService.Infrastructure
+
+Зависит от OrderService.Application.
+
+Внешние зависимости:
+- Kafka
+- Fluent Migrator
+- Grpc AspNetCore
+- MurmurHash
+- Npgsql
+- Redis
+
+Содержит:
+- реализацию всех четырех репозиториев (три через Postgres, один через Redis),
+- proto-файлы все трех GRPC-клиентов (CustomersService, LogisticsSimulator, ServiceDiscovery),
+- интерфейс вспомогательного сервиса IServiceDiscovery,
+- реализацию вспомогательных сервисов ICustomersService, ILogisticsSimulator и IServiceDiscovery,
+- интерфейсы и реализацию ClientBalancing,
+- интерфейсы и реализацию DAL (включая миграции и шардирование),
+- консьюмеров и продюсеров Kafka-сообщений,
+- ServiceCollectionExtension, регистрирующий все инфраструктурные сервисы в DI-контейнере приложения.
   
 ## GatewayService
 
