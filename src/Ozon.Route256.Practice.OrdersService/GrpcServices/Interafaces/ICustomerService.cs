@@ -1,6 +1,6 @@
 
+using Ozon.Route256.Practice.OrdersService.Domain.Dto.Responses;
 using Ozon.Route256.Practice.OrdersService.Protos;
-using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
 
 namespace Ozon.Route256.Practice.OrdersService.GrpcServices.Interfaces;
 

@@ -1,5 +1,6 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Ozon.Route256.Practice.OrdersService.Domain.Dto.Responses;
 using Ozon.Route256.Practice.OrdersService.GrpcServices.Extensions;
 using Ozon.Route256.Practice.OrdersService.GrpcServices.Interfaces;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Impl;

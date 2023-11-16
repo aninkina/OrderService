@@ -1,18 +1,18 @@
-using Ozon.Route256.Practice.OrdersService.Infrastructure;
 using Ozon.Route256.Practice.OrdersService.GrpcServices;
-using Ozon.Route256.Practice.OrdersService.Services.Interfaces;
-using Ozon.Route256.Practice.OrdersService.Services;
-using Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Impl;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Kafka;
 using Ozon.Route256.Practice.OrdersService.GrpcServices.Interfaces;
 using Ozon.Route256.Practice.OrdersService.Protos;
 using Ozon.Route256.Practice.OrdersService.Infrastructure.Redis;
-using Ozon.Route256.Practice.OrdersService.Dal.Common;
-using Ozon.Route256.Practice.OrdersService.Dal;
-using FluentMigrator.Runner;
 using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
-using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
 using Ozon.Route256.Practice.OrdersService.Services.Models.Requests;
+using Ozon.Route256.Practice.OrdersService.Repository.Impl;
+using Ozon.Route256.Practice.OrdersService.Infrastructure.Repository.Impl.Outdated;
+using Ozon.Route256.Practice.OrdersService.Middlewares;
+using Ozon.Route256.Practice.OrdersService.Infrastructure.Dal;
+using Ozon.Route256.Practice.OrdersService.Infrastructure.Dal.Common;
+using Ozon.Route256.Practice.OrdersService.Infrastructure.ClientBalancing;
+using Ozon.Route256.Practice.OrdersService.Application.Services;
+using Ozon.Route256.Practice.OrdersService.Application.Services.Interfaces;
 
 namespace Ozon.Route256.Practice.OrdersService;
 
@@ -39,7 +39,7 @@ public sealed class Startup
         services.AddGrpc(x => x.Interceptors.Add<LoggerInterceptor>());
 
         services.AddSingleton<InMemoryStorage>();
-        services.AddScoped<IOrdersRepository, DbOrdersRepository>();
+        services.AddScoped<IOrdersRepositoryV2, ShardOrderRepository>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICustomerService, CustomerService>();
 
@@ -66,6 +66,7 @@ public sealed class Startup
         });
 
         services.AddGrpcReflection();
+        services.AddHostedService<SdConsumerHostedService>();
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();

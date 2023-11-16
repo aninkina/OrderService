@@ -1,10 +1,4 @@
 using Google.Protobuf.WellKnownTypes;
-using Ozon.Route256.Practice.OrdersService.Protos;
-using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
-using Ozon.Route256.Practice.OrdersService.Services.Dto.Responses;
-using Ozon.Route256.Practice.OrdersService.Services.Models.Common;
-using Ozon.Route256.Practice.OrdersService.Services.Models.Requests;
-using Ozon.Route256.Practice.OrdersService.Services.Models.Responses;
 
 namespace Ozon.Route256.Practice.OrdersService.GrpcServices.Extensions;
 

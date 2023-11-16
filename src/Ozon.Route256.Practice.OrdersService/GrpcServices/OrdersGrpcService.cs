@@ -1,8 +1,8 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Ozon.Route256.Practice.OrdersService.Application.Services.Interfaces;
 using Ozon.Route256.Practice.OrdersService.GrpcServices.Extensions;
 using Ozon.Route256.Practice.OrdersService.Protos.OrdersProto;
-using Ozon.Route256.Practice.OrdersService.Services.Interfaces;
 
 namespace Ozon.Route256.Practice.OrdersService.GrpcServices;
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Compile Update="Dal\Shard\Connection\ShardNpgsqlCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Dal\Shard\Connection\ShardNpgsqlConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ImportGroup>
+  </ImportGroup>
+  
+
+</Project>
