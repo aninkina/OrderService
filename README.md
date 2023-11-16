@@ -70,7 +70,7 @@ Sends the order change status to the **orders_events** topic
 
 Не зависит от других проектов.
 Не имеет внешних зависимостей.
-Содержит Entities, а также связанные с ними Extensions и Exceptions.
+Содержит DTO, а также связанные с ними Exceptions.
 
 ### OrdersService.Application
 
